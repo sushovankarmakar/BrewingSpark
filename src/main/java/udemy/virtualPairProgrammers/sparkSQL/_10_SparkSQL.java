@@ -26,8 +26,8 @@ public class _10_SparkSQL {
                 .getOrCreate();
         // config("spark.sql.warehouse.dir", "file:///c:/tmp/") -> here spark will store some files related to spark sql
 
-        // Dataset is an abstraction which represents our data
-        // we're still working with RDD objects, these objects are hidden into the Dataset object.
+        // Dataset is an abstraction that represents our data
+        // we're still working with RDD objects; these objects are hidden into the Dataset object.
         Dataset<Row> inputData = sparkSession.read()
                 .option("header", "true")
                 .csv(inputFilePath);

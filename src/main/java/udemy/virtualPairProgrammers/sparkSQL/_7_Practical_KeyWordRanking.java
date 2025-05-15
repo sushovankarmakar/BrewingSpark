@@ -4,7 +4,6 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
-import udemy.virtualPairProgrammers.Util;
 
 import java.util.Arrays;
 

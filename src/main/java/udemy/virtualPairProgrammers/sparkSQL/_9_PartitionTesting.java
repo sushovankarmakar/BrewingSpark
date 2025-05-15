@@ -27,7 +27,7 @@ public class _9_PartitionTesting {
             // It means, you'll have at some point do the work to group them back together.
             // It is the last resort, but it works
             JavaPairRDD<String, String> pairRDD = javaRDD.mapToPair(inputLine -> {
-                String[] parts = inputLine.split(":");
+                String[] parts = inputLine.split(",");
                 String level = parts[0]; //  + (int)(Math.random() * 11); here we can do 'salting' on the key so that keys are evenly distributed.
                 String date = parts[1];
                 return new Tuple2<>(level, date);
@@ -46,8 +46,8 @@ public class _9_PartitionTesting {
 
             System.out.println("Total count is : " + results.count());
 
-            // Spark runs a UI server on port 4040 and this server is ONLY accessible through the lifespan of our code.
-            // This below scanner code is used to stop completing our code so that we can look into Spark UI peacefully.
+            // Spark runs a UI server on port 4040, and this server is ONLY accessible through the lifespan of our code.
+            // This below scanner code is used to stop completing our code so that we can look into the Spark UI peacefully.
             Scanner sc = new Scanner(System.in);
             sc.nextLine();
             sc.close();

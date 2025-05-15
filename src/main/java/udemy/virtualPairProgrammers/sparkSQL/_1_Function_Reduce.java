@@ -27,12 +27,12 @@ public class _1_Function_Reduce {
                 .setAppName("startingSpark")
                 .setMaster("local[*]"); // setting up in local configuration as we don't have the cluster.
                 // local[*] means 'use all the cores available in this machine'
-                // local means 'running in a single thread' - less performance
+                // local means 'running in a single thread' - lower performance
 
         JavaSparkContext sc = new JavaSparkContext(sparkConf);  // JavaSparkContext is a connection to the Spark cluster
 
-        // JavaRDD : a bridge between java and spark which is written in Scala. So under the hood, JavaRDD is a wrapper which internally connect with the Scala RDD
-        // parallelize : loading a java collection and turn it into a RDD
+        // JavaRDD: a bridge between java and spark which is written in Scala. So under the hood, JavaRDD is a wrapper that internally connects with the Scala RDD
+        // parallelize: loading a java collection and turning it into a RDD
         JavaRDD<Double> myRDD = sc.parallelize(inputData);
 
         System.out.println(myRDD.toDebugString());

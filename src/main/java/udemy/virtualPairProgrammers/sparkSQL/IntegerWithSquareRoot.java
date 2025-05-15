@@ -1,4 +1,4 @@
-package udemy.virtualPairProgrammers;
+package udemy.virtualPairProgrammers.sparkSQL;
 
 public class IntegerWithSquareRoot {
 

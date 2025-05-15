@@ -41,7 +41,7 @@ public class _4_PairRDD_WithFluentAPI {
                 );
 
         // groupByKey example:
-        // warning : group by key causes serious performance issues, data skewness issues
+        // warning: group by key causes serious performance issues, data skewness issues
         // also, the value is gives for each key is Iterable type. We can't call .size() method on Iterable type.
         sc.parallelize(inputData)
                 .mapToPair(rawValue -> new Tuple2<>(rawValue.split(":")[0], 1L))
