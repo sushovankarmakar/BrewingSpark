@@ -34,6 +34,13 @@
                 <version>${spark.version}</version>
                 <scope>${dependency.scope}</scope>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-mllib -->
+            <dependency>
+                <groupId>org.apache.spark</groupId>
+                <artifactId>spark-mllib_${scala.base.version}</artifactId>
+                <version>${spark.version}</version>
+                <scope>${dependency.scope}</scope>
+            </dependency>
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-common</artifactId>
@@ -93,6 +100,10 @@
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_${scala.base.version}</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-mllib_${scala.base.version}</artifactId>
         </dependency>
         <!-- Hadoop Common: Contains the common utilities needed by Hadoop, including file system access -->
         <dependency>
