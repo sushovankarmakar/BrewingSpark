@@ -28,7 +28,7 @@ public class _1_GymCompetitors {
         Dataset<Row> csvDataset = sparkSession.read()
                 .option("header", true)
                 .option("inferSchema", true)
-                .csv("src/main/resources/GymCompetition.csv");
+                .csv("src/main/resources/udemy/virtualPairProgrammers/sparkML/GymCompetition.csv");
 
         csvDataset.printSchema();
         csvDataset.show(false);
