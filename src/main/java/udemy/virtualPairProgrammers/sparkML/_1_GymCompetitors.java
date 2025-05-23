@@ -3,6 +3,8 @@ package udemy.virtualPairProgrammers.sparkML;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
+import org.apache.spark.ml.feature.OneHotEncoder;
+import org.apache.spark.ml.feature.StringIndexer;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.ml.linalg.Vector;
 import org.apache.spark.ml.regression.LinearRegression;
@@ -33,17 +35,31 @@ public class _1_GymCompetitors {
         csvDataset.printSchema();
         csvDataset.show(false);
 
-        VectorAssembler vectorAssembler = new VectorAssembler();
-        vectorAssembler.setInputCols(new String[]{"Age", "Height", "Weight"});
-        vectorAssembler.setOutputCol("features");
+        // indexing and encoding
+        StringIndexer genderIndexer = new StringIndexer()
+                .setInputCol("Gender")
+                .setOutputCol("GenderIndex");
+        Dataset<Row> indexedDataset = genderIndexer.fit(csvDataset).transform(csvDataset);
 
-        Dataset<Row> csvDataWithFeatures = vectorAssembler.transform(csvDataset);
+        OneHotEncoder genderEncoder = new OneHotEncoder()
+                .setInputCol("GenderIndex")
+                .setOutputCol("GenderVector");
+        Dataset<Row> encodedDataset = genderEncoder.fit(indexedDataset).transform(indexedDataset);
+        encodedDataset.show(false);
+
+        // creating feature column from input columns
+        VectorAssembler vectorAssembler = new VectorAssembler()
+                .setInputCols(new String[]{"Age", "Height", "Weight", "GenderVector"})
+                .setOutputCol("features");
+        Dataset<Row> csvDataWithFeatures = vectorAssembler.transform(encodedDataset);
+
         Dataset<Row> modelInputData = csvDataWithFeatures
                 .select("NoOfReps", "features")
                 .withColumnRenamed("NoOfReps", "label");
 
         modelInputData.show(false);
 
+        // creating linear regression model
         LinearRegression linearRegression = new LinearRegression();
         LinearRegressionModel linearRegressionModel = linearRegression.fit(modelInputData);
         double intercept = linearRegressionModel.intercept();

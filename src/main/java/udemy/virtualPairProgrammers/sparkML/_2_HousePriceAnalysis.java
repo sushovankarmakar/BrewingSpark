@@ -4,6 +4,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.ml.evaluation.RegressionEvaluator;
+import org.apache.spark.ml.feature.OneHotEncoder;
+import org.apache.spark.ml.feature.StringIndexer;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.ml.linalg.Vector;
 import org.apache.spark.ml.param.DoubleParam;
@@ -43,8 +45,16 @@ public class _2_HousePriceAnalysis {
         csvDataset = csvDataset.withColumn("sqrt_above_percentage",
                 functions.col("sqft_above").divide(functions.col("sqft_living")));
 
+        // condition -> conditionIndex -> conditionVector
+        // grade -> gradeIndex -> gradeVector
+        // zipcode -> zipcodeIndex -> zipcodeVector
+        csvDataset = convertNonNumericColumns(csvDataset);
+        csvDataset.show(false);
+
         VectorAssembler vectorAssembler = new VectorAssembler()
-                .setInputCols(new String[]{"bedrooms", "bathrooms", "sqft_living", "sqrt_above_percentage", "floors"})
+                .setInputCols(new String[]{"bedrooms", "bathrooms", "sqft_living",
+                        "sqrt_above_percentage", "floors",
+                        "conditionVector", "gradeVector", "zipcodeVector"})
                 .setOutputCol("features");
 
         Dataset<Row> modelInputData = vectorAssembler.transform(csvDataset)
@@ -58,11 +68,11 @@ public class _2_HousePriceAnalysis {
         Dataset<Row> holdOutData = inputData[1];
 
         // 1. running process one time with model fitting parameters
-        /*LinearRegressionModel linearRegressionModel = new LinearRegression()
-                .setMaxIter(10) // these are model fitting parameters
-                .setRegParam(0.3)
-                .setElasticNetParam(0.8)
-                .fit(trainingData);*/
+//        LinearRegressionModel linearRegressionModel = new LinearRegression()
+//                .setMaxIter(10) // these are model fitting parameters
+//                .setRegParam(0.3)
+//                .setElasticNetParam(0.8)
+//                .fit(trainingData);
 
         // 2. running process multiple time with model fitting parameters
         LinearRegression linearRegression = new LinearRegression();
@@ -102,5 +112,30 @@ public class _2_HousePriceAnalysis {
 
         LinearRegressionSummary evaluatedData = linearRegressionModel.evaluate(holdOutData);
         System.out.println("The holdout data has r2 " + evaluatedData.r2() + " and rootMeanSquaredError " + evaluatedData.rootMeanSquaredError());
+    }
+
+    // converting non-numeric columns into vector
+    private static Dataset<Row> convertNonNumericColumns(Dataset<Row> csvDataset) {
+
+        StringIndexer conditionIndexer = new StringIndexer()
+                .setInputCol("condition")
+                .setOutputCol("conditionIndex");
+        csvDataset = conditionIndexer.fit(csvDataset).transform(csvDataset);
+
+        StringIndexer gradeIndexer = new StringIndexer()
+                .setInputCol("grade")
+                .setOutputCol("gradeIndex");
+        csvDataset = gradeIndexer.fit(csvDataset).transform(csvDataset);
+
+        StringIndexer zipCodeIndexer = new StringIndexer()
+                .setInputCol("zipcode")
+                .setOutputCol("zipcodeIndex");
+        csvDataset = zipCodeIndexer.fit(csvDataset).transform(csvDataset);
+
+        OneHotEncoder encoder = new OneHotEncoder()
+                .setInputCols(new String[]{"conditionIndex", "gradeIndex", "zipcodeIndex"})
+                .setOutputCols(new String[]{"conditionVector", "gradeVector", "zipcodeVector"});
+
+        return encoder.fit(csvDataset).transform(csvDataset);
     }
 }
