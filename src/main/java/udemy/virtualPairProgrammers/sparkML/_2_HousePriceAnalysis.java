@@ -17,6 +17,7 @@ import org.apache.spark.ml.tuning.TrainValidationSplitModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.functions;
 
 public class _2_HousePriceAnalysis {
 
@@ -39,8 +40,11 @@ public class _2_HousePriceAnalysis {
 
         //csvDataset.printSchema();
 
+        csvDataset = csvDataset.withColumn("sqrt_above_percentage",
+                functions.col("sqft_above").divide(functions.col("sqft_living")));
+
         VectorAssembler vectorAssembler = new VectorAssembler()
-                .setInputCols(new String[]{"bedrooms", "bathrooms", "sqft_living", "sqft_lot", "floors", "grade"})
+                .setInputCols(new String[]{"bedrooms", "bathrooms", "sqft_living", "sqrt_above_percentage", "floors"})
                 .setOutputCol("features");
 
         Dataset<Row> modelInputData = vectorAssembler.transform(csvDataset)
